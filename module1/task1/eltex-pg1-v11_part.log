@@ -1,0 +1,174 @@
+eltex-pg1-v11@eltex-2025-summer:~$ ls
+ls           lsb_release  lsinitramfs  lslocks      lsmod        lspci
+lsattr       lscpu        lsipc        lslogins     lsns         lsusb
+lsblk        lsfd         lsirq        lsmem        lsof
+
+eltex-pg1-v11@eltex-2025-summer:~$ $HIST
+$HISTCMD       $HISTCONTROL   $HISTFILE      $HISTFILESIZE  $HISTSIZE
+
+eltex-pg1-v11@eltex-2025-summer:~$ echo $HISTSIZE
+1000
+
+eltex-pg1-v11@eltex-2025-summer:~$ ls -d .*
+.bash_history  .bash_logout  .bashrc  .config  .lesshst  .profile  .ssh  .viminfo
+
+eltex-pg1-v11@eltex-2025-summer:~$ HISTTIMEFORMAT="%F %T "
+eltex-pg1-v11@eltex-2025-summer:~$ history 3
+   10  2025-07-11 15:18:15 ls -d .*
+   11  2025-07-11 15:20:00 HISTTIMEFORMAT="%F %T "
+   12  2025-07-11 15:20:06 history 3
+
+eltex-pg1-v11@eltex-2025-summer:~$ cat .bash_history
+screen -S "`whoami`_part2"
+TREM=dumb
+screen -ls
+screen -r eltex-pg1-v11_part2
+exit
+vi eltex-pg1-v11_part.log
+exit
+
+eltex-pg1-v11@eltex-2025-summer:~$ cat .bash_history
+screen -S "`whoami`_part2"
+TREM=dumb
+screen -ls
+screen -r eltex-pg1-v11_part2
+exit
+vi eltex-pg1-v11_part.log
+exit
+#1752221883
+ls -d .*
+#1752221893
+rm .eltex-pg1-v11_part.log.swp
+#1752221895
+ls -d .*
+#1752222000
+HISTTIMEFORMAT="%F %T "
+#1752222006
+history 3
+#1752222037
+date
+#1752222043
+history 3
+#1752222090
+tail 3 .bash_history
+#1752222101
+tail -n2 3 .bash_history
+#1752222112
+tail .bash_history 3
+#1752222134
+cat .bash_history
+#1752222171
+export PROMPT_COMMAND="history -a"
+#1752222174
+pwd
+#1752222180
+history 3
+
+eltex-pg1-v11@eltex-2025-summer:~$ DATE=$(date +%F)
+eltex-pg1-v11@eltex-2025-summer:~$ echo $DATE
+2025-07-11
+
+eltex-pg1-v11@eltex-2025-summer:~$ TIME=$(date +%T)
+eltex-pg1-v11@eltex-2025-summer:~$ echo $TIME
+15:26:23
+
+eltex-pg1-v11@eltex-2025-summer:~$ DATE_TIME="$DATE $TIME"
+eltex-pg1-v11@eltex-2025-summer:~$ echo $DATE_TIME
+2025-07-11 15:26:23
+
+eltex-pg1-v11@eltex-2025-summer:~$ find /bin/ /sbin/ -type f -name "*[0-9]*"
+/bin/pod2html
+/bin/python3.11
+/bin/ssh-argv0
+/bin/c99-gcc
+/bin/x86_64-linux-gnu-gcc-ar-12
+/bin/base64
+/bin/x86_64-linux-gnu-gcc-ranlib-12
+/bin/enc2xs
+/bin/x86_64-linux-gnu-gcov-12
+/bin/pod2usage
+/bin/x86_64-linux-gnu-objdump
+/bin/sha224sum
+/bin/x86_64-linux-gnu-objcopy
+/bin/bzip2
+/bin/x86_64-linux-gnu-readelf
+/bin/x86_64-linux-gnu-ar
+/bin/grub-mkpasswd-pbkdf2
+/bin/md5sum
+/bin/bzip2recover
+/bin/grub-menulst2cfg
+/bin/x86_64-linux-gnu-cpp-12
+/bin/x86_64-linux-gnu-size
+/bin/x86_64-linux-gnu-gprofng
+/bin/x86_64-linux-gnu-gprof
+/bin/h2xs
+/bin/x86_64-linux-gnu-ranlib
+/bin/x86_64-linux-gnu-ld.gold
+/bin/x86_64-linux-gnu-as
+/bin/pod2text
+/bin/x86_64-linux-gnu-nm
+/bin/x86_64-linux-gnu-elfedit
+/bin/x86_64-linux-gnu-strip
+/bin/x86_64-linux-gnu-gcc-nm-12
+/bin/perl5.36.0
+/bin/x86_64-linux-gnu-ld.bfd
+/bin/pydoc3.11
+/bin/x86_64-linux-gnu-gcov-tool-12
+/bin/b2sum
+/bin/x86_64-linux-gnu-lto-dump-12
+/bin/pod2man
+/bin/sha1sum
+/bin/c89-gcc
+/bin/pl2pm
+/bin/h2ph
+/bin/x86_64-linux-gnu-c++filt
+/bin/sha512sum
+/bin/x86_64-linux-gnu-gcc-12
+/bin/x86_64-linux-gnu-gp-display-src
+/bin/base32
+/bin/x86_64-linux-gnu-gp-collect-app
+/bin/cpan5.36-x86_64-linux-gnu
+/bin/x86_64-linux-gnu-gp-archive
+/bin/sha384sum
+/bin/py3clean
+/bin/x86_64-linux-gnu-gcov-dump-12
+/bin/perl5.36-x86_64-linux-gnu
+/bin/x86_64-linux-gnu-strings
+/bin/x86_64-linux-gnu-gp-display-html
+/bin/pygettext3.11
+/bin/systemd-id128
+/bin/x86_64-linux-gnu-dwp
+/bin/bunzip2
+/bin/x86_64-linux-gnu-gp-display-text
+/bin/x86_64-linux-gnu-addr2line
+/bin/py3compile
+/bin/grub-syslinux2cfg
+/bin/diff3
+/bin/sha256sum
+/sbin/dumpe2fs
+/sbin/e2fsck
+/sbin/e2freefrag
+/sbin/e2undo
+/sbin/e2scrub_all
+/sbin/tune2fs
+/sbin/e2image
+/sbin/e4defrag
+/sbin/mke2fs
+/sbin/e4crypt
+/sbin/killall5
+/sbin/e2scrub
+/sbin/resize2fs
+
+USER@eltex-2025-summer-15:45>PS1='$USER@$HOSTNAME-$(date +%H:%M)>'
+eltex-pg1-v11@eltex-2025-summer-15:46>
+
+eltex-pg1-v11@eltex-2025-summer-15:54>echo "export PS1='$PS1'" > .bashrc
+eltex-pg1-v11@eltex-2025-summer-15:55>bash
+eltex-pg1-v11@eltex-2025-summer-15:55>
+
+eltex-pg1-v11@eltex-2025-summer-15:57>mkdir -p "$(date +%Y)"-{01..12}
+eltex-pg1-v11@eltex-2025-summer-15:58>ls
+2025-01  2025-04  2025-07  2025-10  eltex-pg1-v11_part.log
+2025-02  2025-05  2025-08  2025-11  report_part1.txt
+2025-03  2025-06  2025-09  2025-12
+
