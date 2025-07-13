@@ -1,0 +1,207 @@
+root@eltex-practice2-pg1-v11:~/repo# git config --global user.name "QuadroVelluto" 
+root@eltex-practice2-pg1-v11:~/repo# git config --global user.email "aashvedunov@gmail.com"
+root@eltex-practice2-pg1-v11:~/repo# git config --global init.defaultBranch main
+
+root@eltex-practice2-pg1-v11:~/repo# ssh-keygen -t ed25519 -f ~/.ssh/QuadroVelluto
+Generating public/private ed25519 key pair.
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /root/.ssh/QuadroVelluto
+Your public key has been saved in /root/.ssh/QuadroVelluto.pub
+The key fingerprint is:
+SHA256:1b0SWgbtuvWOgBiNcRYLjA58MBlF27Jd+e/hXSv/X4Y root@eltex-practice2-pg1-v11
+The key's randomart image is:
++--[ED25519 256]--+
+| .+*oo. . ..     |
+|  +.oo.. + o..   |
+|   +o o * ..= .  |
+|    .+ B o +.. . |
+|    . + S o.. .  |
+|       o ..... . |
+|      . . .oo.E +|
+|          .+ =.oo|
+|            +.=o=|
++----[SHA256]-----+
+
+root@eltex-practice2-pg1-v11:~/repo# gh auth login
+? What account do you want to log into? GitHub.com
+? What is your preferred protocol for Git operations on this host? SSH
+? Upload your SSH public key to your GitHub account? /root/.ssh/QuadroVelluto.pub
+? Title for your SSH key: eltex-practice2-pg1-v11
+? How would you like to authenticate GitHub CLI? Login with a web browser
+
+! First copy your one-time code: D9D7-2A86
+Press Enter to open github.com in your browser...
+! Failed opening a web browser at https://github.com/login/device
+  exec: "xdg-open,x-www-browser,www-browser,wslview": executable file not found in $PATH
+  Please try entering the URL in your browser manually
+✓ Authentication complete.
+- gh config set -h github.com git_protocol ssh
+✓ Configured git protocol
+! Authentication credentials saved in plain text
+✓ Uploaded the SSH key to your GitHub account: /root/.ssh/QuadroVelluto.pub
+✓ Logged in as QuadroVelluto
+
+root@eltex-practice2-pg1-v11:~/repo# gh auth setup-git --hostname github.com
+root@eltex-practice2-pg1-v11:~/repo# gh auth status
+github.com
+  ✓ Logged in to github.com account QuadroVelluto (/root/.config/gh/hosts.yml)
+  - Active account: true
+  - Git operations protocol: ssh
+  - Token: gho_************************************
+  - Token scopes: 'admin:public_key', 'gist', 'read:org', 'repo'
+
+root@eltex-practice2-pg1-v11:~/repo# gh repo create --public SummerSchool
+✓ Created repository QuadroVelluto/SummerSchool on GitHub
+  https://github.com/QuadroVelluto/SummerSchool
+
+root@eltex-practice2-pg1-v11:~/repo# echo "# Eltex Summer School" >> README.md
+root@eltex-practice2-pg1-v11:~/repo# git init
+Initialized empty Git repository in /root/repo/.git/
+root@eltex-practice2-pg1-v11:~/repo# git add README.md 
+root@eltex-practice2-pg1-v11:~/repo# git commit -m "First commit"
+[main (root-commit) 85c2bac] First commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 README.md
+root@eltex-practice2-pg1-v11:~/repo# git branch -M main
+root@eltex-practice2-pg1-v11:~/repo# git remote add origin https://github.com/QuadroVelluto/SummerSchool.git
+root@eltex-practice2-pg1-v11:~/repo# git push -u origin main
+Enumerating objects: 3, done.
+Counting objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 241 bytes | 241.00 KiB/s, done.
+Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/QuadroVelluto/SummerSchool.git
+ * [new branch]      main -> main
+branch 'main' set up to track 'origin/main'.
+
+root@eltex-practice2-pg1-v11:~/repo# mkdir -p module1/task1
+root@eltex-practice2-pg1-v11:~/repo# mkdir module1/task2
+root@eltex-practice2-pg1-v11:~/repo# mkdir module1/task3
+root@eltex-practice2-pg1-v11:~/repo# ls module1/task1
+
+eltex-pg1-v11@eltex-2025-summer-11:39>scp report_part1.txt  root@172.16.9.185:/root/repo/module1/task1 -i practice2p1key
+practice2p1key: Not a directory
+eltex-pg1-v11@eltex-2025-summer-11:39>scp -i practice2p1key report_part1.txt root@172.16.9.185:/root/repo/module1/task1
+Enter passphrase for key 'practice2p1key':
+report_part1.txt                                                                                                                           100%  126     3.3KB/s   00:00
+eltex-pg1-v11@eltex-2025-summer-11:39>scp -i practice2p1key eltex root@172.16.9.185:/root/repo/module1/task1
+eltex:                          eltex-pg1-v11_part3_gt50M.log   eltex-pg1-v11_part3.log         eltex-pg1-v11_part.log          eltex.vt.cs.nstu.ru:
+eltex-pg1-v11@eltex-2025-summer-11:39>scp -i practice2p1key eltex-pg1-v11_part root@172.16.9.185:/root/repo/module1/task1
+eltex-pg1-v11_part3_gt50M.log   eltex-pg1-v11_part3.log         eltex-pg1-v11_part.log
+eltex-pg1-v11@eltex-2025-summer-11:39>scp -i practice2p1key eltex-pg1-v11_part.log root@172.16.9.185:/root/repo/module1/task1
+Enter passphrase for key 'practice2p1key':
+eltex-pg1-v11_part.log                                                                                                                     100% 4188   340.8KB/s   00:00
+eltex-pg1-v11@eltex-2025-summer-11:39>scp -i practice2p1key eltex-pg1-v11_part3.log root@172.16.9.185:/root/repo/module1/task1
+Enter passphrase for key 'practice2p1key':
+eltex-pg1-v11_part3.log                                                                                                                    100% 1292    82.4KB/s   00:00
+eltex-pg1-v11@eltex-2025-summer-11:39>scp -i practice2p1key practice2 root@172.16.9.185:/root/repo/module1/task2
+practice2_eltex-pg1-v11_part1.log   practice2_eltex-pg1-v11_part3.log   practice2p1key.pub
+practice2_eltex-pg1-v11_part2.log   practice2p1key
+eltex-pg1-v11@eltex-2025-summer-11:39>scp -i practice2p1key practice2_eltex-pg1-v11_part1.log  root@172.16.9.185:/root/repo/module1/task2
+Enter passphrase for key 'practice2p1key':
+practice2_eltex-pg1-v11_part1.log                                                                                                          100%   13KB  24.6MB/s   00:00
+eltex-pg1-v11@eltex-2025-summer-11:39>scp -i practice2p1key practice2_eltex-pg1-v11_part2.log  root@172.16.9.185:/root/repo/module1/task2
+Enter passphrase for key 'practice2p1key':
+practice2_eltex-pg1-v11_part2.log
+
+root@eltex-practice2-pg1-v11:~/repo# git add .
+root@eltex-practice2-pg1-v11:~/repo# git status
+On branch main
+Your branch is up to date with 'origin/main'.
+ 
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        new file:   "module1/task1/Eltex. \320\236\321\202\321\207\320\265\321\202 1.pdf"
+        new file:   module1/task1/eltex-pg1-v11_part.log
+        new file:   module1/task1/eltex-pg1-v11_part3.log
+        new file:   module1/task1/report_part1.txt
+        new file:   module1/task2/practice2_eltex-pg1-v11_part1.log
+        new file:   module1/task2/practice2_eltex-pg1-v11_part2.log
+ 
+root@eltex-practice2-pg1-v11:~/repo# git commit -m "Added reports/logs for 1 and 2 practice" 
+[main 99d5f2c] Added reports/logs for 1 and 2 practice
+ 6 files changed, 553 insertions(+)
+ create mode 100644 "module1/task1/Eltex. \320\236\321\202\321\207\320\265\321\202 1.pdf"
+ create mode 100644 module1/task1/eltex-pg1-v11_part.log
+ create mode 100644 module1/task1/eltex-pg1-v11_part3.log
+ create mode 100644 module1/task1/report_part1.txt
+ create mode 100644 module1/task2/practice2_eltex-pg1-v11_part1.log
+ create mode 100644 module1/task2/practice2_eltex-pg1-v11_part2.log
+
+root@eltex-practice2-pg1-v11:~/repo# git push
+Enumerating objects: 12, done.
+Counting objects: 100% (12/12), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (11/11), done.
+Writing objects: 100% (11/11), 231.08 KiB | 28.88 MiB/s, done.
+Total 11 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/QuadroVelluto/SummerSchool.git
+   85c2bac..99d5f2c  main -> main
+root@eltex-practice2-pg1-v11:~/repo# 
+
+root@eltex-practice2-pg1-v11:~/repo_clone# git clone https://github.com/QuadroVelluto/SummerSchool.git .
+Cloning into '.'...
+remote: Enumerating objects: 14, done.
+remote: Counting objects: 100% (14/14), done.
+remote: Compressing objects: 100% (12/12), done.
+remote: Total 14 (delta 0), reused 14 (delta 0), pack-reused 0 (from 0)
+Receiving objects: 100% (14/14), 231.29 KiB | 618.00 KiB/s, done.
+
+root@eltex-practice2-pg1-v11:~/repo/module1/task1# mv eltex-pg1-v11_part.log eltex-pg1-v11_part2.log
+root@eltex-practice2-pg1-v11:~/repo/module1/task1# git add .
+root@eltex-practice2-pg1-v11:~/repo/module1/task1# git commit -m "Renamed second log in first practice"
+[main 4f8def6] Renamed second log in first practice
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ rename module1/task1/{eltex-pg1-v11_part.log => eltex-pg1-v11_part2.log} (100%) 
+root@eltex-practice2-pg1-v11:~/repo# git push
+Enumerating objects: 7, done.
+Counting objects: 100% (7/7), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (4/4), 396 bytes | 396.00 KiB/s, done.
+Total 4 (delta 1), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+To https://github.com/QuadroVelluto/SummerSchool.git
+   99d5f2c..4f8def6  main -> main
+
+root@eltex-practice2-pg1-v11:~/repo_clone# git fetch
+remote: Enumerating objects: 7, done.
+remote: Counting objects: 100% (7/7), done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 4 (delta 1), reused 4 (delta 1), pack-reused 0 (from 0)
+Unpacking objects: 100% (4/4), 376 bytes | 376.00 KiB/s, done.
+From https://github.com/QuadroVelluto/SummerSchool
+   99d5f2c..4f8def6  main       -> origin/main
+root@eltex-practice2-pg1-v11:~/repo_clone# git log origin/main
+commit 4f8def67480521f8234d88815f18cdc82c87aec9 (origin/main, origin/HEAD)
+Author: QuadroVelluto <aashvedunov@gmail.com>
+Date:   Sun Jul 13 16:54:07 2025 +0000
+
+    Renamed second log in first practice
+
+commit 99d5f2cb2fcf770b3a90d4583c82a8bb18fae2a5 (HEAD -> main)
+Author: QuadroVelluto <aashvedunov@gmail.com>
+Date:   Sun Jul 13 16:48:44 2025 +0000
+
+    Added reports/logs for 1 and 2 practice
+
+commit 85c2bacf63e83ff37d9e38041ea02739012064d9
+Author: QuadroVelluto <aashvedunov@gmail.com>
+Date:   Sun Jul 13 15:56:06 2025 +0000
+
+    First commit
+
+root@eltex-practice2-pg1-v11:~/repo_clone# git diff main origin/main
+diff --git a/module1/task1/eltex-pg1-v11_part.log b/module1/task1/eltex-pg1-v11_part2.log
+similarity index 100%
+rename from module1/task1/eltex-pg1-v11_part.log
+rename to module1/task1/eltex-pg1-v11_part2.log
+
+root@eltex-practice2-pg1-v11:~/repo_clone# git merge
+Updating 99d5f2c..4f8def6
+Fast-forward
+ module1/task1/{eltex-pg1-v11_part.log => eltex-pg1-v11_part2.log} | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ rename module1/task1/{eltex-pg1-v11_part.log => eltex-pg1-v11_part2.log} (100%)
+
+
