@@ -2,6 +2,23 @@
 #include <stdlib.h>
 #include <string.h>
 
+bool isValidDate(int day, int month, int year)
+{
+    if (year < 1900 || year > 2025)
+        return false;
+
+    if (month < 1 || month > 12)
+        return false;
+
+    int max_day = 31;
+    if (month == 4 || month == 6 || month == 9 || month == 11)
+        max_day = 30;
+    else if (month == 2)
+        max_day = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) ? 29 : 28;
+
+    return (day >= 1 && day <= max_day);
+}
+
 void printPerson(const struct node *const p)
 {
     printf("\nID: %d\n", p->person.id);
@@ -28,49 +45,53 @@ void printPersonShort(const struct node *const p)
     printf("ID: %d | %s %s\n", p->person.id, p->person.lastName, p->person.firstName);
 }
 
-struct node *addContact(struct node *current, Person *temp)
+void addContact(struct node *head, Person *temp)
 {
-    current->next = malloc(sizeof(struct node));
-    current = current->next;
-    *current = (struct node){0};
+    struct node *last = head;
+    while (last->next != NULL)
+        last = last->next;
 
-    strcpy(current->person.firstName, temp->firstName);
-    strcpy(current->person.lastName, temp->lastName);
-    current->person.DateOfBirth = temp->DateOfBirth;
-    current->person.id = temp->id;
+    last->next = malloc(sizeof(struct node));
+    struct node *newNode = last->next;
+    memset(newNode, 0, sizeof(struct node));
 
-    strcpy(current->person.JobInfo.workplace, temp->JobInfo.workplace);
-    strcpy(current->person.JobInfo.jobTitle, temp->JobInfo.jobTitle);
-    for(int i = 0; i < 3; i++)
-        strcpy(current->person.phoneNumbers[i], temp->phoneNumbers[i]);
+    strcpy(newNode->person.firstName, temp->firstName);
+    strcpy(newNode->person.lastName, temp->lastName);
+    newNode->person.DateOfBirth = temp->DateOfBirth;
+    newNode->person.id = temp->id;
+    strcpy(newNode->person.JobInfo.workplace, temp->JobInfo.workplace);
+    strcpy(newNode->person.JobInfo.jobTitle, temp->JobInfo.jobTitle);
+    for (int i = 0; i < 3; i++)
+        strcpy(newNode->person.phoneNumbers[i], temp->phoneNumbers[i]);
 
-    current->next = NULL;
-    return current;
+    newNode->next = NULL;
 }
 
 struct node *findContactById(struct node *head, int id)
 {
-	struct node *iter = head->next;
-	while (iter != NULL)
-	{
-		if (iter->person.id == id)
-			return iter;
-		iter = iter->next;
-	}
-	return NULL;
+    struct node *iter = head->next;
+    for (; iter != NULL; iter = iter->next)
+        if (iter->person.id == id)
+            return iter;
+    return NULL;
 }
 
 bool deleteContact(struct node *head, int id)
 {
-	struct node *contact = findContactById(head, id);
-	if (contact != NULL)
-		{
-			struct node *temp = contact->next;
-			contact->next = temp->next;
-			free(temp);
-			return true;
-		}
+    struct node *prev = head;
+    struct node *current = head->next;
 
+    while (current != NULL)
+    {
+        if (current->person.id == id)
+        {
+            prev->next = current->next;
+            free(current);
+            return true;
+        }
+        prev = current;
+        current = current->next;
+    }
     return false;
 }
 
@@ -79,8 +100,8 @@ void menu()
     int id_helper = 0;
     Person temp;
     struct node *head = malloc(sizeof(struct node));
-    struct node *current = head;
     head->next = NULL;
+    memset(head, 0, sizeof(struct node));
 
     char choice = 0;
 
@@ -130,18 +151,39 @@ void menu()
             printf("Введите фамилию: ");
             scanf("%s", temp.lastName);
 
-            printf("Введите дату рождения (дд.мм.гггг): ");
-            scanf("%hhd.%hhd.%hd",
-                  &temp.DateOfBirth.day,
-                  &temp.DateOfBirth.month,
-                  &temp.DateOfBirth.year);
+            bool validDate = false;
+            do
+            {
+                printf("Введите дату рождения (дд.мм.гггг): ");
+                int day, month;
+                short year;
+                if (scanf("%d.%d.%hd", &day, &month, &year) != 3)
+                {
+                    printf("Неверный формат даты!\n");
+                    while (getchar() != '\n')
+                        ;
+                    continue;
+                }
+
+                if (isValidDate(day, month, year))
+                {
+                    temp.DateOfBirth.day = (char)day;
+                    temp.DateOfBirth.month = (char)month;
+                    temp.DateOfBirth.year = year;
+                    validDate = true;
+                }
+                else
+                {
+                    printf("Некорректная дата!\n");
+                }
+            } while (!validDate);
             getchar();
 
             printf("Введите место работы (опционально): ");
             fgets(temp.JobInfo.workplace, sizeof(temp.JobInfo.workplace), stdin);
             temp.JobInfo.workplace[strcspn(temp.JobInfo.workplace, "\n")] = '\0';
 
-            if(strlen(temp.JobInfo.workplace) > 0)
+            if (strlen(temp.JobInfo.workplace) > 0)
             {
                 printf("Введите должность (опционально): ");
                 fgets(temp.JobInfo.jobTitle, sizeof(temp.JobInfo.jobTitle), stdin);
@@ -154,10 +196,11 @@ void menu()
                 printf("Номер телефона (%d/3): ", i + 1);
                 fgets(temp.phoneNumbers[i], sizeof(temp.phoneNumbers[0]), stdin);
                 temp.phoneNumbers[i][strcspn(temp.phoneNumbers[i], "\n")] = '\0';
-                if (strlen(temp.phoneNumbers[i]) == 0) break;
+                if (strlen(temp.phoneNumbers[i]) == 0)
+                    break;
             }
 
-            current = addContact(current, &temp);
+            addContact(head, &temp);
             break;
 
         case 3:
@@ -175,7 +218,8 @@ void menu()
 
             int field_choice;
             char buffer[128];
-            do {
+            do
+            {
                 printf("\nЧто изменить?\n");
                 printf("[1] Имя (текущее: %s)\n", target->person.firstName);
                 printf("[2] Фамилия (текущая: %s)\n", target->person.lastName);
@@ -197,40 +241,67 @@ void menu()
                     printf("Новое имя: ");
                     fgets(buffer, sizeof(buffer), stdin);
                     buffer[strcspn(buffer, "\n")] = '\0';
-                    if (strlen(buffer)) strcpy(target->person.firstName, buffer);
+                    if (strlen(buffer))
+                        strcpy(target->person.firstName, buffer);
                     break;
                 case 2:
                     printf("Новая фамилия: ");
                     fgets(buffer, sizeof(buffer), stdin);
                     buffer[strcspn(buffer, "\n")] = '\0';
-                    if (strlen(buffer)) strcpy(target->person.lastName, buffer);
+                    if (strlen(buffer))
+                        strcpy(target->person.lastName, buffer);
                     break;
                 case 3:
-                    printf("Новая дата рождения (дд.мм.гггг): ");
-                    scanf("%hhd.%hhd.%hd",
-                          &target->person.DateOfBirth.day,
-                          &target->person.DateOfBirth.month,
-                          &target->person.DateOfBirth.year);
+                    bool validDate = false;
+                    do
+                    {
+                        printf("Новая дата рождения (дд.мм.гггг): ");
+                        int day, month;
+                        short year;
+                        if (scanf("%d.%d.%hd", &day, &month, &year) != 3)
+                        {
+                            printf("Неверный формат даты!\n");
+                            while (getchar() != '\n')
+                                ;
+                            continue;
+                        }
+
+                        if (isValidDate(day, month, year))
+                        {
+                            target->person.DateOfBirth.day = (char)day;
+                            target->person.DateOfBirth.month = (char)month;
+                            target->person.DateOfBirth.year = year;
+                            validDate = true;
+                        }
+                        else
+                        {
+                            printf("Некорректная дата!\n");
+                        }
+                    } while (!validDate);
                     getchar();
                     break;
                 case 4:
                     printf("Новое место работы: ");
                     fgets(buffer, sizeof(buffer), stdin);
                     buffer[strcspn(buffer, "\n")] = '\0';
-                    if (strlen(buffer)) strcpy(target->person.JobInfo.workplace, buffer);
+                    if (strlen(buffer))
+                        strcpy(target->person.JobInfo.workplace, buffer);
                     break;
                 case 5:
                     printf("Новая должность: ");
                     fgets(buffer, sizeof(buffer), stdin);
                     buffer[strcspn(buffer, "\n")] = '\0';
-                    if (strlen(buffer)) strcpy(target->person.JobInfo.jobTitle, buffer);
+                    if (strlen(buffer))
+                        strcpy(target->person.JobInfo.jobTitle, buffer);
                     break;
                 case 6:
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < 3; i++)
+                    {
                         printf("Номер телефона (%d/3) (текущий: %s): ", i + 1, target->person.phoneNumbers[i]);
                         fgets(buffer, sizeof(buffer), stdin);
                         buffer[strcspn(buffer, "\n")] = '\0';
-                        if (strlen(buffer)) strcpy(target->person.phoneNumbers[i], buffer);
+                        if (strlen(buffer))
+                            strcpy(target->person.phoneNumbers[i], buffer);
                     }
                     break;
                 case 0:
@@ -248,14 +319,14 @@ void menu()
             printf("Введите ID контакта: ");
             int del_id = 0;
             scanf("%d", &del_id);
-            if(deleteContact(head, del_id))
+            if (deleteContact(head, del_id))
                 printf("Контакт %d удален\n", del_id);
             else
                 printf("Не удалось найти контакт с ID: %d\n", del_id);
             break;
 
         case 0:
-            current = head;
+            struct node *current = head;
             while (current != NULL)
             {
                 struct node *tmp = current;

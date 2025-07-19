@@ -32,6 +32,4 @@ struct node
 	struct node *next;
 };
 
-struct node *addContact(struct node *, Person *);
-void printPerson(const struct node *const);
 void menu();
