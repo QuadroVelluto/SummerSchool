@@ -13,10 +13,7 @@ int ip_decider(char gateway[], char N[])
 {
     int hits = 0;
     int n = atoi(N);
-    char ip_copy[32];
-    strncpy(ip_copy, gateway, sizeof(ip_copy));
-    ip_copy[sizeof(ip_copy) - 1] = '\0';
-    char *ip_str = strtok(ip_copy, "/");
+    char *ip_str = strtok(gateway, "/");
     char *mask_str = strtok(NULL, "/");
 
     if (!ip_str || !mask_str)

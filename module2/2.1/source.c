@@ -160,15 +160,14 @@ void menu()
                 if (scanf("%d.%d.%hd", &day, &month, &year) != 3)
                 {
                     printf("Неверный формат даты!\n");
-                    while (getchar() != '\n')
-                        ;
+                    while (getchar() != '\n');
                     continue;
                 }
 
                 if (isValidDate(day, month, year))
                 {
-                    temp.DateOfBirth.day = (char)day;
-                    temp.DateOfBirth.month = (char)month;
+                    temp.DateOfBirth.day = day;
+                    temp.DateOfBirth.month = month;
                     temp.DateOfBirth.year = year;
                     validDate = true;
                 }
