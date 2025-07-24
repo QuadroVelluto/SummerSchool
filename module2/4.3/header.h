@@ -4,17 +4,20 @@
 
 #define MAX_STRING_LENGTH 20
 
-typedef struct {
+typedef struct
+{
     unsigned char day, month;
     unsigned short year;
 } Date;
 
-typedef struct {
+typedef struct
+{
     char workplace[MAX_STRING_LENGTH];
     char jobTitle[MAX_STRING_LENGTH];
 } Job;
 
-typedef struct {
+typedef struct
+{
     int id;
     char firstName[MAX_STRING_LENGTH];
     char lastName[MAX_STRING_LENGTH];
@@ -23,10 +26,11 @@ typedef struct {
     char phoneNumbers[3][13];
 } Person;
 
-typedef struct node {
+struct node
+{
     Person person;
     struct node *left;
     struct node *right;
-} Node;
+};
 
 void menu();

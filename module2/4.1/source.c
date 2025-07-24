@@ -136,7 +136,7 @@ void relocateContact(struct node **head, struct node *target)
     if (*head == NULL || target == NULL)
         return;
 
-    // Отключаем узел из текущего положения
+    // отключаем узел из текущего положения
     if (target->prev)
         target->prev->next = target->next;
     else
@@ -147,27 +147,27 @@ void relocateContact(struct node **head, struct node *target)
 
     target->prev = target->next = NULL;
 
-    // Если список пуст после удаления, делаем head = target
+    // если список пуст после удаления, делаем head = target
     if (*head == NULL)
     {
         *head = target;
         return;
     }
 
-    // Найти новое место для вставки
+    // найти новое место для вставки
     struct node *current = *head;
 
     while (current && strcmp(target->person.lastName, current->person.lastName) > 0)
         current = current->next;
 
-    // Вставить в начало
+    // вставить в начало
     if (current == *head)
     {
         target->next = *head;
         (*head)->prev = target;
         *head = target;
     }
-    // Вставить в конец
+    // вставить в конец
     else if (current == NULL)
     {
         struct node *tail = *head;
@@ -176,7 +176,7 @@ void relocateContact(struct node **head, struct node *target)
         tail->next = target;
         target->prev = tail;
     }
-    // Вставить между узлами
+    // вставить между узлами
     else
     {
         target->next = current;
