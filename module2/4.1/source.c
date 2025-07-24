@@ -131,6 +131,61 @@ bool deleteContact(struct node **head, int id)
     return false;
 }
 
+void relocateContact(struct node **head, struct node *target)
+{
+    if (*head == NULL || target == NULL)
+        return;
+
+    // Отключаем узел из текущего положения
+    if (target->prev)
+        target->prev->next = target->next;
+    else
+        *head = target->next; // если это head
+
+    if (target->next)
+        target->next->prev = target->prev;
+
+    target->prev = target->next = NULL;
+
+    // Если список пуст после удаления, делаем head = target
+    if (*head == NULL)
+    {
+        *head = target;
+        return;
+    }
+
+    // Найти новое место для вставки
+    struct node *current = *head;
+
+    while (current && strcmp(target->person.lastName, current->person.lastName) > 0)
+        current = current->next;
+
+    // Вставить в начало
+    if (current == *head)
+    {
+        target->next = *head;
+        (*head)->prev = target;
+        *head = target;
+    }
+    // Вставить в конец
+    else if (current == NULL)
+    {
+        struct node *tail = *head;
+        while (tail->next)
+            tail = tail->next;
+        tail->next = target;
+        target->prev = tail;
+    }
+    // Вставить между узлами
+    else
+    {
+        target->next = current;
+        target->prev = current->prev;
+        current->prev->next = target;
+        current->prev = target;
+    }
+}
+
 void menu()
 {
     int id_helper = 0;
@@ -335,6 +390,7 @@ void menu()
                     }
                     break;
                 case 0:
+                    relocateContact(&head, target);
                     break;
                 default:
                     printf("Неверный выбор.\n");
@@ -373,6 +429,3 @@ void menu()
         }
     }
 }
-
-
-// Сортировка при ред.
