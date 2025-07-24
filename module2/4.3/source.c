@@ -21,9 +21,11 @@ bool isValidDate(int day, int month, int year)
 
 int comparePersons(const Person *a, const Person *b)
 {
+    // сравниваем фамилии
     int last = strcmp(a->lastName, b->lastName);
     if (last != 0)
         return last;
+    // сравниваем имена если фамилии одинаковые
     return strcmp(a->firstName, b->firstName);
 }
 
@@ -31,6 +33,7 @@ Node *insertNode(Node *root, Person *p)
 {
     if (!root)
     {
+        // если поддерево пустое создаем узел
         Node *newNode = malloc(sizeof(Node));
         if (!newNode)
             return NULL;
@@ -39,6 +42,8 @@ Node *insertNode(Node *root, Person *p)
         return newNode;
     }
 
+    // рекурсивно вызываем функцию в поддеревьях
+    // на основе сравнения ФИ
     if (comparePersons(p, &root->person) < 0)
         root->left = insertNode(root->left, p);
     else
@@ -48,6 +53,7 @@ Node *insertNode(Node *root, Person *p)
 
 Node *findById(Node *root, int id)
 {
+    // DFS левый
     if (!root)
         return NULL;
     if (root->person.id == id)
@@ -58,41 +64,48 @@ Node *findById(Node *root, int id)
 
 Node *findMin(Node *root)
 {
+    // минимальный элемент поддерева
     while (root && root->left)
         root = root->left;
     return root;
 }
 
-Node *deleteById(Node *root, int id, bool *found)
+Node *deleteNode(Node *root, int id)
 {
     if (!root)
         return NULL;
 
+    // ищем узел в поддереве
     if (id < root->person.id)
-        root->left = deleteById(root->left, id, found);
+    {
+        root->left = deleteNode(root->left, id);
+    }
     else if (id > root->person.id)
-        root->right = deleteById(root->right, id, found);
+    {
+        root->right = deleteNode(root->right, id);
+    }
     else
     {
-        *found = true;
+        // нашли узел для удаления
+
+        // нет детей или только один ребёнок
         if (!root->left)
         {
-            Node *tmp = root->right;
+            Node *rightChild = root->right;
             free(root);
-            return tmp;
+            return rightChild;
         }
         else if (!root->right)
         {
-            Node *tmp = root->left;
+            Node *leftChild = root->left;
             free(root);
-            return tmp;
+            return leftChild;
         }
-        else
-        {
-            Node *minRight = findMin(root->right);
-            root->person = minRight->person;
-            root->right = deleteById(root->right, minRight->person.id, found);
-        }
+
+        // два ребёнка
+        Node *tmp = findMin(root->right);
+        root->person = tmp->person;
+        root->right = deleteNode(root->right, tmp->person.id);
     }
     return root;
 }
@@ -184,10 +197,10 @@ void menu()
     while (1)
     {
         printf("\nМЕНЮ\n");
-        printf("[1] - Вывести список контактов\n");
-        printf("[2] - Добавить контакт\n");
-        printf("[3] - Редактировать контакт\n");
-        printf("[4] - Удалить контакт\n");
+        printf("[1] Вывести список контактов\n");
+        printf("[2] Добавить контакт\n");
+        printf("[3] Редактировать контакт\n");
+        printf("[4] Удалить контакт\n");
         printf("[5] Выполнить балансировку дерева\n");
         printf("[6] Визуализировать дерево контактов\n");
         printf("[0] Выйти из программы\n");
@@ -217,10 +230,10 @@ void menu()
             memset(&temp, 0, sizeof(Person));
             temp.id = id_helper++;
             printf("Введите имя: ");
-            scanf("%19s", temp.firstName);
+            scanf("%s", temp.firstName);
             printf("Введите фамилию: ");
 
-            scanf("%19s", temp.lastName);
+            scanf("%s", temp.lastName);
             bool valid = false;
             do
             {
@@ -229,9 +242,8 @@ void menu()
                 short y;
                 if (scanf("%d.%d.%hd", &d, &m, &y) != 3 || !isValidDate(d, m, y))
                 {
-                    printf("Ошибка. Повторите.\n");
-                    while (getchar() != '\n')
-                        ;
+                    printf("Неверный формат даты!\n");
+                    while (getchar() != '\n');
                 }
                 else
                 {
@@ -318,13 +330,26 @@ void menu()
 
         case '4':
         {
+            root = balanceTree(root);
+            if (!root)
+            {
+                printf("Список пуст.\n");
+                break;
+            }
             printf("ID для удаления: ");
-            int id;
-            scanf("%d", &id);
+            int idToDelete;
+            scanf("%d", &idToDelete);
             getchar();
-            bool found = false;
-            root = deleteById(root, id, &found);
-            printf(found ? "Удалено\n" : "Контакт не найден\n");
+
+            if (!findById(root, idToDelete))
+            {
+                printf("Контакт с ID %d не найден.\n", idToDelete);
+            }
+            else
+            {
+                root = deleteNode(root, idToDelete);
+                printf("Контакт с ID %d удалён.\n", idToDelete);
+            }
             break;
         }
 
@@ -337,7 +362,7 @@ void menu()
                 printf("Дерево пусто.\n");
             else
             {
-                printf("\nСТРУКТУРА ДЕРЕВА (корень слева):\n");
+                printf("\nСТРУКТУРА ДЕРЕВА:\n");
                 printTree(root, 0);
             }
             break;

@@ -149,7 +149,7 @@ void menu()
         }
 
         case 3:
-            printf("Введите приоритет (0 - 255): ");
+            printf("Введите приоритет (0 - %d): ", MIN_PRIORITY);
             scanf("%d", &priority);
             getchar();
             {
@@ -167,7 +167,7 @@ void menu()
             break;
 
         case 4:
-            printf("Введите максимальный приоритет (0 - 255): ");
+            printf("Введите максимальный приоритет (0 - %d): ", MIN_PRIORITY);
             scanf("%d", &priority);
             getchar();
             {
@@ -195,7 +195,7 @@ void menu()
             getchar();
             for (int i = 0; i < count; ++i)
             {
-                int p = rand() % 256;
+                int p = rand() % MIN_PRIORITY;
                 snprintf(message, sizeof(message), "Сообщение #%d", i + 1);
                 pq_enqueue(&queue, p, message);
             }
