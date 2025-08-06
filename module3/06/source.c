@@ -3,52 +3,129 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <unistd.h>
+#include <stdbool.h>
+#include <signal.h>
+#include <sys/wait.h>
 
-int create_queue(key_t key)
+int mq_global;
+
+void cleanup_and_exit(int signum)
 {
-    int qid = msgget(key, IPC_CREAT | 0666);
-    if (qid == -1)
-    {
-        perror("msgget/create");
-        exit(EXIT_FAILURE);
-    }
-    return qid;
+    printf("\nShutting down server (signal %d)...\n", signum);
+    if (msgctl(mq_global, IPC_RMID, NULL) == -1)
+        perror("msgctl(IPC_RMID)");
+    exit(EXIT_SUCCESS);
 }
 
-int get_queue(key_t key)
+void run_server(int mq)
 {
-    int qid = msgget(key, 0666);
-    if (qid == -1)
-    {
-        perror("msgget/open");
-        exit(EXIT_FAILURE);
-    }
-    return qid;
-}
+    mq_global = mq;
+    signal(SIGINT, cleanup_and_exit); // обработка Ctrl+C
 
-int send_message(int qid, long mtype, int sender, const char *text)
-{
-    msgbuf msg;
-    msg.mtype = mtype;
-    msg.sender = sender;
-    strncpy(msg.mtext, text, MAX_TEXT - 1);
-    msg.mtext[MAX_TEXT - 1] = '\0';
-    if (msgsnd(qid, &msg, sizeof(msg) - sizeof(long), 0) == -1)
-    {
-        perror("msgsnd");
-        return -1;
-    }
-    return 0;
-}
+    printf("Server started, mq = %d\n", mq);
 
-int receive_message(int qid, long mtype, msgbuf *msg)
-{
-    ssize_t ret = msgrcv(qid, msg, sizeof(*msg) - sizeof(long), mtype, 0);
-    if (ret == -1)
+    bool client_connected[MAX_CLIENTS + 1] = {false};
+
+    msgbuf buffer;
+    while (1)
     {
-        if (errno != ENOMSG)
+        if (msgrcv(mq, &buffer, sizeof(buffer) - sizeof(long), 1, 0) == -1)
+        {
+            if (errno == EINTR)
+                continue; // сигнал, перезапустить msgrcv
             perror("msgrcv");
-        return -1;
+            break;
+        }
+
+        int cid = buffer.client_id;
+
+        if (!client_connected[cid])
+        {
+            client_connected[cid] = true;
+            printf("Client(%d) connected\n", cid);
+        }
+
+        printf("Client(%d): %s\n", cid, buffer.mtext);
+
+        if (strcmp(buffer.mtext, "shutdown") == 0)
+        {
+            client_connected[cid] = false;
+            char line[MAX_TEXT];
+            snprintf(line, sizeof(line), "Client(%d) disconnected", cid);
+            printf("%s\n", line);
+            strncpy(buffer.mtext, line, MAX_TEXT);
+        }
+
+        for (int target = 1; target <= MAX_CLIENTS; target++)
+        {
+            if (target == cid || !client_connected[target])
+                continue;
+
+            buffer.mtype = target;
+            if (msgsnd(mq, &buffer, sizeof(buffer) - sizeof(long), 0) == -1)
+            {
+                perror("msgsnd");
+                break;
+            }
+        }
     }
-    return 0;
+
+    cleanup_and_exit(0);
+}
+
+void run_client(int mq, int client_id)
+{
+    pid_t pid = fork();
+    if (pid == -1)
+    {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
+
+    if (pid == 0)
+    {
+        msgbuf buffer;
+        while (1)
+        {
+            if (msgrcv(mq, &buffer, sizeof(buffer) - sizeof(long), client_id, 0) == -1)
+            {
+                if (errno == EINTR)
+                    continue;
+                perror("msgrcv (client)");
+                exit(EXIT_FAILURE);
+            }
+            printf("Client(%d)> %s\n", buffer.client_id, buffer.mtext);
+        }
+    }
+
+    msgbuf buffer;
+    while (1)
+    {
+        printf("> ");
+        if (fgets(buffer.mtext, MAX_TEXT, stdin) == NULL)
+            break;
+
+        buffer.mtext[strcspn(buffer.mtext, "\n")] = '\0'; // remove newline
+        buffer.mtype = 1;
+        buffer.client_id = client_id;
+
+        if (msgsnd(mq, &buffer, sizeof(buffer) - sizeof(long), 0) == -1)
+        {
+            perror("msgsnd");
+            break;
+        }
+
+        if (strcmp(buffer.mtext, "shutdown") == 0)
+        {
+            kill(pid, SIGTERM); // убиваем дочерний процесс
+            wait(NULL);         // ожидаем его завершения
+            break;
+        }
+    }
+
+    printf("Client exiting...\n");
+    exit(EXIT_SUCCESS);
 }
