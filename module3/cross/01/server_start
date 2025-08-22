@@ -1,0 +1,3 @@
+#! /bin/bash
+
+sudo ./server lo aa:bb:cc:dd:ee:01 10.0.0.1 9000
