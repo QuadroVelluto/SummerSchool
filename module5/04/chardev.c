@@ -10,7 +10,11 @@ MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Module for lab4");
 MODULE_AUTHOR("Anton Shvedunov");
 
-static char msg[100] = {0};
+#define DEVICE_NAME "AntonChDev"
+#define CLASS_NAME "AntonClass"
+#define BUF_LEN 100
+
+static char msg[BUF_LEN] = {0};
 static short readPos = 0;
 static int times = 0;
 static int major;
@@ -32,8 +36,8 @@ static struct file_operations fops =
 static int __init sys_init(void)
 {
 	major = register_chrdev(0, "AntonChDev", &fops);
-	cls = class_create("AntonClass");
-	device_create(cls, NULL, MKDEV(major, 0), NULL, "AntonChDev");
+	cls = class_create(CLASS_NAME);
+	device_create(cls, NULL, MKDEV(major, 0), NULL, DEVICE_NAME);
 
 	printk("Device registered with major %d\n", major);
 	return 0;
@@ -43,7 +47,7 @@ static void __exit sys_exit(void)
 {
 	device_destroy(cls, MKDEV(major, 0));
 	class_destroy(cls);
-	unregister_chrdev(major, "AntonChDev");
+	unregister_chrdev(major, DEVICE_NAME);
 	printk("Cleaning up...\n");
 }
 
@@ -68,22 +72,22 @@ static ssize_t dev_read(struct file *flip, char __user *buff, size_t len, loff_t
 
 static ssize_t dev_write(struct file *flip, const char __user *buff, size_t len, loff_t *off)
 {
-    ssize_t count;
+	ssize_t count;
 
-    if (len > sizeof(msg) - 1)
-        len = sizeof(msg) - 1;
+	if (len > sizeof(msg) - 1)
+		len = sizeof(msg) - 1;
 
-    if (copy_from_user(msg, buff, len)) {
-        return -EFAULT;
-    }
+	if (copy_from_user(msg, buff, len))
+	{
+		return -EFAULT;
+	}
 
-    msg[len] = '\0';
-    readPos = 0;
-    count = len;
+	msg[len] = '\0';
+	readPos = 0;
+	count = len;
 
-    return count;
+	return count;
 }
-
 
 static int dev_rls(struct inode *inod, struct file *fil)
 {
